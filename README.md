@@ -19,7 +19,7 @@ If you need more about about Odoo, go to: https://www.odoo.com/
 ##Clone this repo
 
 ```
-$ git clone https://github.com/jthmiranda/docker-netdot.git && cd docker-odoo
+$ git clone https://github.com/jthmiranda/docker-odoo.git && cd docker-odoo
 ```
 
 ##Build Dockerfile
