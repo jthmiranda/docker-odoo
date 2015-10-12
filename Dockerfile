@@ -57,7 +57,6 @@ ADD odoo-server.conf /etc/
 RUN chown -R $OE_USER:$OE_USER $OE_HOME/* \
 	&& chown $OE_USER:$OE_USER /etc/odoo-server.conf \
 	&& chmod 640 /etc/odoo-server.conf \
-	&& chmod 775 $OE_HOME_EXT/start.sh	\
 	&& chmod 775 /etc/init.d/odoo-server \
 	&& chown root: /etc/init.d/odoo-server
 
