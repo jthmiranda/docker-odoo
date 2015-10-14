@@ -1,0 +1,13 @@
+odoo:
+  build: .
+  links:
+    - "db:DB"
+  ports:
+    - "8007:8069"
+  volumes:
+    - "$HOME/Documentos/addons_company:/opt/odoo/custom/addons"
+db:
+  build: ./postgres
+  environment:
+    POSTGRES_USER: odoo
+    POSTGRES_PASSWORD: odoo
