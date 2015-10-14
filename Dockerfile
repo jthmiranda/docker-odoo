@@ -53,13 +53,17 @@ RUN mkdir $OE_HOME/custom && mkdir $OE_HOME/custom/addons
 
 ADD odoo-init /etc/init.d/odoo-server
 ADD odoo-server.conf /etc/
+ADD start.sh /
 
 RUN chown -R $OE_USER:$OE_USER $OE_HOME/* \
 	&& chown $OE_USER:$OE_USER /etc/odoo-server.conf \
 	&& chmod 640 /etc/odoo-server.conf \
+	&& chmod 755 /start.sh \
 	&& chmod 775 /etc/init.d/odoo-server \
 	&& chown root: /etc/init.d/odoo-server
 
 EXPOSE 8069
 
-CMD "/bin/sh" "-c" "service odoo-service start"
+USER odoo
+
+ENTRYPOINT ["/start.sh"]  
