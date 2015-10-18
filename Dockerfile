@@ -23,7 +23,8 @@ RUN adduser --system --quiet --shell=/bin/bash --home=$OE_HOME --gecos 'ODOO' --
 #--------------------------------------------------
 # Install Basic Dependencies
 #--------------------------------------------------
-RUN apt-get install -y \
+RUN apt-get install -y --no-install-recommends \
+	build-essential \
 	wget \
 	git \
 	python-pip \
@@ -35,19 +36,43 @@ RUN apt-get install -y \
 	libldap2-dev \
 	libsasl2-dev \
 	node-less \
-	postgresql-server-dev-all -y
-	
+	postgresql-server-dev-all \
+	libjpeg-dev \
+	libfreetype6-dev \
+	zlib1g-dev \
+	libpng12-dev \
+	&& ln -s /usr/include/freetype2 /usr/include/freetype \
+	&& wget http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-trusty-amd64.deb \
+	&& dpkg --force-depends -i wkhtmltox-0.12.2.1_linux-trusty-amd64.deb 2>/dev/null \  
+	&& apt-get install -y -f --no-install-recommends \
+	&& dpkg -i wkhtmltox-0.12.2.1_linux-trusty-amd64.deb \
+	&& sudo cp /usr/local/bin/wkhtmltopdf /usr/bin \
+	&& sudo cp /usr/local/bin/wkhtmltoimage /usr/bin \	
+	&& rm -f wkhtmltox-0.12.2.1_linux-trusty-amd64.deb \
+	&& wget http://effbot.org/downloads/Imaging-1.1.7.tar.gz \	
+	&& tar xzvf Imaging-1.1.7.tar.gz \
+	&& rm -f Imaging-1.1.7.tar.gz \
+	&& cd Imaging-1.1.7/ \
+	&& sed -i "s/TCL_ROOT = None/TCL_ROOT = '\/usr\/lib\/x86_64-linux-gnu'/" setup.py \
+	&& sed -i "s/JPEG_ROOT = None/JPEG_ROOT = '\/usr\/lib\/x86_64-linux-gnu'/" setup.py \
+	&& sed -i "s/ZLIB_ROOT = None/ZLIB_ROOT = '\/usr\/lib\/x86_64-linux-gnu'/" setup.py \
+	&& sed -i "s/TIFF_ROOT = None/TIFF_ROOT = '\/usr\/lib\/x86_64-linux-gnu'/" setup.py \
+	&& sed -i "s/FREETYPE_ROOT = None/FREETYPE_ROOT = '\/usr\/lib\/x86_64-linux-gnu'/" setup.py \
+	&& sed -i "s/LCMS_ROOT = None/LCMS_ROOT = '\/usr\/lib\/x86_64-linux-gnu'/" setup.py \
+	&& python setup.py install \
+	&& cd .. \
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false npm 	
 
 #--------------------------------------------------
 # Cloning Odoo
 #--------------------------------------------------
-RUN git clone --depth 1 --single-branch --branch 8.0 https://github.com/OCA/OCB.git $OE_HOME/odoo-server
+RUN git clone --depth 1 --single-branch --branch 8.0 https://github.com/odoo/odoo.git $OE_HOME/odoo-server
 
 #--------------------------------------------------
 # Install Dependencies
 #--------------------------------------------------
 RUN pip install -r $OE_HOME_EXT/requirements.txt \
-	&& easy_install pyPdf vatnumber pydot psycogreen suds ofxparse
+	&& easy_install suds ofxparse
 	
 RUN mkdir $OE_HOME/custom && mkdir $OE_HOME/custom/addons
 
@@ -61,7 +86,7 @@ RUN chown -R $OE_USER:$OE_USER $OE_HOME/* \
 	&& chmod 755 /start.sh \
 	&& chmod 775 /etc/init.d/odoo-server \
 	&& chown root: /etc/init.d/odoo-server
-
+	
 EXPOSE 8069
 
 USER odoo
