@@ -66,7 +66,7 @@ RUN apt-get install -y --no-install-recommends \
 #--------------------------------------------------
 # Cloning Odoo
 #--------------------------------------------------
-RUN git clone --depth 1 --single-branch --branch 8.0 https://github.com/odoo/odoo.git $OE_HOME/odoo-server
+RUN git clone --depth 1 --single-branch --branch 8.0 https://github.com/OCA/OCB.git $OE_HOME/odoo-server
 
 #--------------------------------------------------
 # Install Dependencies
